@@ -1,17 +1,33 @@
 import numpy as np
 import cv2
 
+class ORB:
+    def __init__(self, img):
+        self.img = img
+        self.gray = cv2.cvtColor(self.img,cv2.COLOR_BGR2GRAY)
+        self.img2 = None
+
+    def findCorner(self):
+        # ORB 추출기 생성
+        orb = cv2.ORB_create()
+
+        # 키 포인트 검출과 서술자 계산
+        kp, des = orb.detectAndCompute(self.gray,None)
+
+        for i in kp:
+            x,y = i.pt
+            # print("x",x)
+            # print("y",y)
+
+        # 키 포인트 그리기
+        img2 = cv2.drawKeypoints(self.img,kp,self.img2,(0,255,0),flags=0)
+
+        return img2
+
 img = cv2.imread('./images/oxford.jpg')
-img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-img2 = None
 
-orb = cv2.ORB_create()
-
-# ORB로 키포인트 / 디스크립터 찾기
-kp,des = orb.detectAndCompute(img,None)
-
-# 키포인트들의 위치만 나타낸다. 크기 /방향 x
-img2 = cv2.drawKeypoints(img,kp,img2,(0,255,0),flags=0)
+orb = ORB(img)
+img2 = orb.findCorner()
 
 cv2.imshow('Res',img2)
 cv2.waitKey(0)
