@@ -19,8 +19,7 @@ class ShiTomasi:
 
         # print("x_corner",corners[:,0,0])
         # print("y_corner",corners[:,0,1])
-    
-        # return print("x",corners[:,0,0])
+
         return self.img
 
 img = cv2.imread('./images/oxford.jpg')
@@ -28,6 +27,6 @@ img = cv2.imread('./images/oxford.jpg')
 ShiTomasi = ShiTomasi(img)
 img = ShiTomasi.findCorner()
 
-cv2.imshow('dst',img)
-cv2.waitKey()
-cv2.destroyAllWindows()
+# cv2.imshow('dst',img)
+# cv2.waitKey()
+# cv2.destroyAllWindows()

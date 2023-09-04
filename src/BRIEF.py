@@ -28,12 +28,11 @@ class BRIEF:
 
         return self.img2
 
-
 img1 = cv2.imread('./images/oxford.jpg')
 
 brief = BRIEF(img1)
 img1 = brief.findCorner()
 
-cv2.imshow('dst',img1)
-cv2.waitKey()
-cv2.destroyAllWindows()
+# cv2.imshow('dst',img1)
+# cv2.waitKey()
+# cv2.destroyAllWindows()

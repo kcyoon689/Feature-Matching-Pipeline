@@ -20,11 +20,6 @@ class Harris:
         criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100 ,0.001)
         corners = cv2.cornerSubPix(self.gray,np.float32(centroids),(5,5),(-1,-1),criteria)
 
-        # for i in corners:
-        #     x,y = i.ravel()
-        #     # print("x",x)
-        #     # print("y",y)
-
         # 그리자!
         res = np.hstack((centroids,corners))
         res = np.int0(res)

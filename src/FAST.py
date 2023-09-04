@@ -21,17 +21,17 @@ class FAST:
             # print("y",y)
 
         img2 = cv2.drawKeypoints(self.img,kp,self.img2,(255,0,0))
-    
-        return img2
+
+        return print("x",kp[0].pt[0])
 
 img = cv2.imread('./images/oxford.jpg')
 
 fast = FAST(img)
 img = fast.findCorner()
 
-cv2.imshow('dst',img)
-cv2.waitKey()
-cv2.destroyAllWindows()
+# cv2.imshow('dst',img)
+# cv2.waitKey()
+# cv2.destroyAllWindows()
 
 # print(kp[0].pt)
 # print("x",kp[0].pt[0])
@@ -39,9 +39,6 @@ cv2.destroyAllWindows()
 # print(kp[1].pt)
 # print("x",kp[1].pt[0])
 # print("y",kp[1].pt[1])
-
-# img2 = cv2.drawKeypoints(img,kp,img2,(255,0,0))
-# cv2.imshow('FAST1',img2)
 
 # # NMS 사용 X
 # fast.setNonmaxSuppression(0)

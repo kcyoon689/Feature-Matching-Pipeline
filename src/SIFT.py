@@ -29,31 +29,6 @@ img = cv2.imread('./images/oxford.jpg')
 sift = SIFT(img)
 img = sift.findCorner()
 
-cv2.imshow('dst',img)
-cv2.waitKey()
-cv2.destroyAllWindows()
-
-
-# 키 포인트 검출과 서술자 계산
-# kp = sift.detect(gray, None)
-# keypoints = np.array(keypoints)
-# descriptor = sift.detectAndCompute(gray, None)[1]
-
-# print("descriptor",descriptor)
-# # print("descriptor.shape",descriptor.shape)
-# print("keypoints[0]",keypoints[0].pt)
-# print("descriptor[0]",descriptor[0])
-# print("descriptor[0].shape",descriptor[0].shape)
-
-# print('keypoint:',len(keypoints), 'descriptor:', descriptor.shape)
-
-# print("2")
-# print(keypoints.shape)
-# print(keypoints[0].pt)
-# print(keypoints[0].pt[0])
-# print(keypoints[0].pt[1])
-# print(keypoints[0].size)
-# print(keypoints[0].angle)
-# print(keypoints[0].response)
-# print(keypoints[0].octave)
-# print(keypoints[0].class_id)
+# cv2.imshow('dst',img)
+# cv2.waitKey()
+# cv2.destroyAllWindows()
