@@ -4,11 +4,10 @@ import numpy as np
 class Harris:
     def __init__(self, img):
         self.img = img
-        self.gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-
-    def findCorner(self):
         self.gray = cv2.cvtColor(self.img,cv2.COLOR_BGR2GRAY)
         self.gray = np.float32(self.gray)
+
+    def findCorner(self):
         self.dst = cv2.cornerHarris(self.gray,2,3,0.04)
         self.dst = cv2.dilate(self.dst,None)
         ret, self.dst = cv2.threshold(self.dst,0.05*self.dst.max(),255,0)
