@@ -1,23 +1,33 @@
 import cv2
 import numpy as np
 import pandas as pd
-from .SIFT import SIFT
-from .ORB import ORB
+import utils
+from typing import Tuple
+
+from ORB import ORB
+
 
 class FLANNMatcher:
-    def run(self, query_img, train_img, query_keypoints, train_keypoints, query_descriptor, train_descriptor, image_output=False):
+    def __init__(self):
         # 인덱스 파라미터 설정 ---①
         FLANN_INDEX_LSH = 6
-        index_params= dict(algorithm = FLANN_INDEX_LSH,
-                        table_number = 6,
-                        key_size = 12,
-                        multi_probe_level = 1)
+        index_params = dict(algorithm=FLANN_INDEX_LSH,
+                            table_number=6,
+                            key_size=12,
+                            multi_probe_level=1)
         # 검색 파라미터 설정 ---②
-        search_params=dict(checks=32)
+        search_params = dict(checks=32)
         # Flann 매처 생성 ---③
-        matcher = cv2.FlannBasedMatcher(index_params, search_params)
+        self.matcher = cv2.FlannBasedMatcher(index_params, search_params)
+
+    def run(self, input: dict) -> dict:
+        # TODO: Implement this function
+        return {}
+
+    def run(self, img0, img1: np.ndarray, img0_keypoints, img0_descriptor: np.ndarray, img1_keypoints,
+            img1_descriptor: np.ndarray, image_output=False) -> Tuple[np.ndarray, pd.DataFrame] or pd.DataFrame:
         # 매칭 계산 ---④
-        matches = matcher.match(query_descriptor, train_descriptor)
+        matches = self.matcher.match(img0_descriptor, img1_descriptor)
 
         matched_keypoints = []
         for i in matches:
@@ -25,35 +35,27 @@ class FLANNMatcher:
 
         matched_keypoints_df = pd.DataFrame(matched_keypoints)
 
-        result_img = cv2.drawMatches(query_img, query_keypoints, train_img, train_keypoints, matches, None, \
-            flags=cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
-        
         if image_output is True:
-            return result_img, matched_keypoints_df
+            img_result = cv2.drawMatches(img0, img0_keypoints, img1, img1_keypoints, matches, None,
+                                         flags=cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
+
+            return img_result, matched_keypoints_df
         else:
             return matched_keypoints_df
 
-if __name__ == "__main__":
 
-    query_img = cv2.imread('./images/oxford.jpg')
-    train_img = cv2.imread('./images/oxford2.jpg')
-    gray1 = cv2.cvtColor(query_img, cv2.COLOR_BGR2GRAY)
-    gray2 = cv2.cvtColor(train_img, cv2.COLOR_BGR2GRAY)
+if __name__ == "__main__":
+    img0 = cv2.imread('./images/oxford.jpg', cv2.IMREAD_COLOR)
+    img1 = cv2.imread('./images/oxford2.jpg', cv2.IMREAD_COLOR)
 
     orb = ORB()
-    query_output = orb.run(query_img)
-    train_output = orb.run(train_img)
-    query_keypoints, query_descriptor = orb.run(query_img)
-    train_keypoints, train_descriptor = orb.run(train_img)
+    img0_result, img0_keypoints_df, img0_descriptors = orb.run(
+        img0, image_output=True)
+    img1_result, img1_keypoints_df, img1_descriptors = orb.run(
+        img1, image_output=True)
 
-    FLANNMatcher = FLANNMatcher()
-    result = FLANNMatcher.run(query_img, train_img, query_keypoints, train_keypoints, query_descriptor, train_descriptor)
-    # 매칭 그리기
+    flannMatcher = FLANNMatcher()
+    img_result, matched_keypoints_df = flannMatcher.run(
+        img0_result, img1_result, img0_keypoints_df['keypoints'], img0_descriptors, img1_keypoints_df['keypoints'], img1_descriptors, image_output=True)
 
-    # 결과 출력
-    window_name = "BF with SIFT"
-    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(window_name, 2000, 1500)
-    cv2.imshow(window_name, result)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    utils.show_image(type(flannMatcher).__name__, img_result)

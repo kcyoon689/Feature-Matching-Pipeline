@@ -1,18 +1,27 @@
 import cv2
+import numpy as np
 import pandas as pd
-from SIFT import SIFT
+import utils
+from typing import Tuple
+
 from ORB import ORB
+
 
 class BFMatcher:
     def __init__(self):
         self.bf = cv2.BFMatcher()
-        # self.bf = cv2.BFMatcher(cv2.NORM_HAMMING,crossCheck=True)
+        # self.bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
+    def run(self, input: dict) -> dict:
+        # TODO: Implement this function
+        return {}
 
-    def run(self, query_img, train_img, query_keypoints, train_keypoints, query_descriptor, train_descriptor):
+    def run(self, img0, img1: np.ndarray, img0_keypoints, img0_descriptor: np.ndarray, img1_keypoints,
+            img1_descriptor: np.ndarray, image_output=False) -> Tuple[np.ndarray, pd.DataFrame] or pd.DataFrame:
         # # 디스크립터들 매칭시키기
-        matches = self.bf.knnMatch(query_descriptor, train_descriptor,k=2)
-        # matches = self.bf.match(query_descriptor, train_descriptor)
+        img0_descriptor = np.array(img0_descriptor, dtype=np.uint8)
+        img1_descriptor = np.array(img1_descriptor, dtype=np.uint8)
+        matches = self.bf.knnMatch(img0_descriptor, img1_descriptor, k=2)
 
         # ratio test 적용
         good = []
@@ -27,30 +36,28 @@ class BFMatcher:
             matched_keypoints.append(i[0].trainIdx)
         matched_keypoints_df = pd.DataFrame(matched_keypoints)
 
-        # # flags=2는 일치되는 특성 포인트만 화면에 표시!
-        # result = cv2.drawMatches(query_img,query_keypoints,train_img,train_keypoints,matches[:10],None,flags=2)
-        result = cv2.drawMatchesKnn(query_img, query_keypoints, train_img, train_keypoints,good,None,flags=2)
+        if image_output is True:
+            # # flags=2는 일치되는 특성 포인트만 화면에 표시!
+            img_result = cv2.drawMatchesKnn(
+                img0, img0_keypoints, img1, img1_keypoints, good, None, flags=2)
 
-        return result, matched_keypoints_df
+            return img_result, matched_keypoints_df
+        else:
+            return matched_keypoints_df
+
 
 if __name__ == "__main__":
-    query_img = cv2.imread('/home/yoonk/pipline/images/oxford.jpg', cv2.IMREAD_COLOR)
-    train_img = cv2.imread('/home/yoonk/pipline/images/oxford2.jpg', cv2.IMREAD_COLOR)
-
-    # sift = SIFT()
-    # query_img, query_keypoints, query_descriptor = sift.run(query_img, image_output=True)
-    # train_img, train_keypoints, train_descriptor = sift.run(train_img, image_output=True)
+    img0 = cv2.imread('./images/oxford.jpg', cv2.IMREAD_COLOR)
+    img1 = cv2.imread('./images/oxford2.jpg', cv2.IMREAD_COLOR)
 
     orb = ORB()
-    query_img, query_keypoints, query_descriptor = orb.run(query_img, image_output=True)
-    train_img, train_keypoints, train_descriptor = orb.run(train_img, image_output=True)
+    img0_result, img0_keypoints_df, img0_descriptors = orb.run(
+        img0, image_output=True)
+    img1_result, img1_keypoints_df, img1_descriptors = orb.run(
+        img1, image_output=True)
 
     bfMatcher = BFMatcher()
-    result_sift, matched_keypoints_df = bfMatcher.run(query_img, train_img, query_keypoints, train_keypoints, query_descriptor, train_descriptor)
+    img_result, matched_keypoints_df = bfMatcher.run(
+        img0_result, img1_result, img0_keypoints_df['keypoints'], img0_descriptors, img1_keypoints_df['keypoints'], img1_descriptors, image_output=True)
 
-    window_name = "BF with SIFT"
-    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(window_name, 2000, 1500)
-    cv2.imshow(window_name, result_sift)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    utils.show_image(type(bfMatcher).__name__, img_result)
