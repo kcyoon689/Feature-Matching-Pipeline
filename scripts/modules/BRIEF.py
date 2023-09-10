@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import pandas as pd
 class BRIEF:
     def run(self, img):
         self.img = img
@@ -12,24 +12,40 @@ class BRIEF:
         brief = cv2.xfeatures2d.BriefDescriptorExtractor_create()
 
         # STAR로 키포인트를 검출하고 BRIEF로 디스크립터 계산
-        kp1 = star.detect(self.img,None)
-        kp2,des = brief.compute(self.img,kp1)
+        keypoints1 = star.detect(self.img,None)
+        keypoints2,descriptor = brief.compute(self.img,keypoints1)
 
-        for i in kp1:
+        keypoints1_x = []
+        keypoints1_y = []
+
+        keypoints2_x = []
+        keypoints2_y = []
+
+        for i in keypoints1:
             x,y = i.pt
-            print("x",x)
-            print("y",y)
+            keypoints1_x.append(x)
+            keypoints1_y.append(y)
+            # print("x",x)
+            # print("y",y)
+        
+        for j in keypoints2:
+            x,y = j.pt
+            keypoints2_x.append(x)
+            keypoints2_y.append(y)
 
-        self.img2 = cv2.drawKeypoints(self.img,kp1,self.img2,(255,0,0))
+        # keypoints1_df = pd.DataFrame({'x':keypoints1_x,'y':keypoints1_y})
+        keypoints_df = pd.DataFrame({'x':keypoints2_x,'y':keypoints2_y})
 
-        return self.img2
+        self.img2 = cv2.drawKeypoints(self.img,keypoints2,self.img2,(255,0,0))
+        
+        return self.img2, keypoints_df
 
 if __name__ == "__main__":
     img1 = cv2.imread('./images/oxford.jpg')
 
-    brief = BRIEF(img1)
-    img1 = brief.findCorner()
-
-    cv2.imshow('dst',img1)
+    brief = BRIEF()
+    result_img, keypoints_df = brief.run(img1)
+    
+    cv2.imshow('dst',result_img)
     cv2.waitKey()
     cv2.destroyAllWindows()

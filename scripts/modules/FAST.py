@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
+import pandas as pd
 
 class FAST:
-    def run(self, img):
+    def run(self, img, image_output=False):
         self.img = img
         self.gray = cv2.cvtColor(self.img,cv2.COLOR_BGR2GRAY)
         self.img2,self.img3 = None,None
@@ -12,16 +13,25 @@ class FAST:
         fast = cv2.FastFeatureDetector_create(100)
         
         # 키포인트를 찾고 그린다
-        kp = fast.detect(self.gray,None)
+        keypoints = fast.detect(self.gray,None)
 
-        for i in kp:
+        keypoints_x = []
+        keypoints_y = []
+
+        for i in keypoints:
             x,y = i.pt
+            keypoints_x.append(x)
+            keypoints_y.append(y)
             # print("x",x)
             # print("y",y)
+        keypoints_pd = pd.DataFrame({'x':keypoints_x,'y':keypoints_y})
 
-        # img2 = cv2.drawKeypoints(self.img,kp,self.img2,(255,0,0))
+        img_draw = cv2.drawKeypoints(self.img,keypoints,self.img2,(255,0,0))
 
-        return print("x",kp[0].pt[0])
+        if image_output is True:
+            return img_draw, keypoints_pd
+        else:
+            return keypoints_pd
 
 if __name__ == "__main__":
     img = cv2.imread('./images/oxford.jpg')
