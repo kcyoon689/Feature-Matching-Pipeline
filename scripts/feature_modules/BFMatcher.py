@@ -1,10 +1,13 @@
 import cv2
 import numpy as np
 import pandas as pd
-import utils
 from typing import Tuple
 
-from ORB import ORB
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # nopep8
+from feature_modules import ORB
+from utils import PlotUtils
 
 
 class BFMatcher:
@@ -60,4 +63,4 @@ if __name__ == "__main__":
     img_result, matched_keypoints_df = bfMatcher.run(
         img0_result, img1_result, img0_keypoints_df['keypoints'], img0_descriptors, img1_keypoints_df['keypoints'], img1_descriptors, image_output=True)
 
-    utils.show_image(type(bfMatcher).__name__, img_result)
+    PlotUtils.show_image(type(bfMatcher).__name__, img_result)

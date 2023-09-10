@@ -2,11 +2,14 @@ import cv2
 import imutils
 import numpy as np
 import pandas as pd
-import utils
 from scipy.linalg import svd, det
 from typing import Tuple
 
-from LoFTR import LoFTR
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # nopep8
+from feature_modules import LoFTR
+from utils import PlotUtils
 
 
 class SVDTF():
@@ -128,4 +131,4 @@ if __name__ == "__main__":
     img_svd_result = cv2.addWeighted(
         img0_svd_result, 0.5, img1_svd_result, 0.5, 0)
 
-    utils.show_image(type(svd).__name__, img_svd_result)
+    PlotUtils.show_image(type(svd).__name__, img_svd_result)

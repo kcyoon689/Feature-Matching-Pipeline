@@ -1,8 +1,12 @@
 import cv2
 import numpy as np
 import pandas as pd
-import utils
 from typing import Tuple
+
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # nopep8
+from utils import DataFrameUtils, PlotUtils
 
 
 class FAST:
@@ -18,7 +22,7 @@ class FAST:
         img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         keypoints = self.fast.detect(img_gray, mask=None)
 
-        keypoints_df = utils.make_data_frame_from_keypoints(keypoints)
+        keypoints_df = DataFrameUtils.make_data_frame_from_keypoints(keypoints)
 
         if image_output is True:
             img_result = cv2.drawKeypoints(
@@ -36,4 +40,4 @@ if __name__ == "__main__":
     fast = FAST()
     img_result, keypoints_df = fast.run(img, image_output=True)
 
-    utils.show_image(type(fast).__name__, img_result)
+    PlotUtils.show_image(type(fast).__name__, img_result)

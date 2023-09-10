@@ -1,40 +1,45 @@
 import cv2
 
-from modules.SIFT import SIFT
-from modules.BFMatcher import BFMatcher
-
-# flag from python arg
-flag_sift = True
-flag_bf_matcher = True
-
-query_img = cv2.imread('/home/yoonk/pipline/images/oxford.jpg', cv2.IMREAD_COLOR)
-train_img = cv2.imread('/home/yoonk/pipline/images/oxford2.jpg', cv2.IMREAD_COLOR)
-
-# 1. Feature Extractor
-# 2. Feature Descriptor
-if flag_sift is True:
-    sift = SIFT()
-    query_keypoints, query_descriptor = sift.run(query_img)
-    train_keypoints, train_descriptor = sift.run(train_img)
-
-# if flag_orb is True:
-#     orb = ORB()
-#     query_keypoints, query_descriptor = orb.run(query_img)
-#     train_keypoints, train_descriptor = orb.run(train_img)
-
-# 3. Feature Matcher
-if flag_bf_matcher is True:
-    bf_matcher = BFMatcher()
-    result_sift = bf_matcher.run(query_img, train_img, 
-                                 query_keypoints, train_keypoints, 
-                                 query_descriptor, train_descriptor)
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # nopep8
+from feature_modules import LoFTR, ORB, SIFT, SVDTF
+from utils import TempUtils
 
 
-# window_name = "SIFT: " + flag_sift + ", BFMatcher: " + flag_bf_matcher
-window_name = "BF with SIFT"
+def main(config: dict):
+    modules = []
+    if config['SIFT'] is True:
+        modules.append(SIFT())
 
-cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
-cv2.resizeWindow(window_name, 2000, 1500)
-cv2.imshow(window_name, result_sift)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    if config['ORB'] is True:
+        modules.append(ORB())
+
+    if config['LoFTR'] is True:
+        modules.append(LoFTR())
+
+    if config['SVDTF'] is True:
+        modules.append(SVDTF())
+
+    img0 = cv2.imread('./images/oxford.jpg', cv2.IMREAD_COLOR)
+    img1 = cv2.imread('./images/oxford2.jpg', cv2.IMREAD_COLOR)
+
+    input = {
+        'img0': img0,
+        'img1': img1,
+    }
+    for module in modules:
+        print("\n[{}] run({})\n".format(type(module).__name__, type(input)))
+        print("\t[input] ".format(input.keys()))
+        output = module.run(input=input)
+        print("\t[output] ".format(output.keys()))
+        input = output
+
+    print(output['rotation_matrix'])
+    print(output['translation_matrix_zero'])
+    print(output['translation_matrix_center'])
+
+
+if __name__ == '__main__':
+    config = TempUtils.load_config('config/test_pipeline.yaml')
+    main(config)

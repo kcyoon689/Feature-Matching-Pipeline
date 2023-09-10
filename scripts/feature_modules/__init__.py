@@ -7,3 +7,4 @@ from .LoFTR import LoFTR
 from .ORB import ORB
 from .ShiTomasi import ShiTomasi
 from .SIFT import SIFT
+from .SVDTF import SVDTF

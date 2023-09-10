@@ -1,6 +1,17 @@
 {
+    "editor.formatOnSave": true,
     "cSpell.words": [
         "FLANN",
-        "Tomasi"
+        "imread",
+        "imshow",
+        "keypoint",
+        "Keypoints",
+        "LANCZOS",
+        "loftr",
+        "ndarray",
+        "nonmax",
+        "svdtf",
+        "Tomasi",
+        "xfeatures2d"
     ]
 }

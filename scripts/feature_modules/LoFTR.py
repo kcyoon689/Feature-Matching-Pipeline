@@ -4,9 +4,13 @@ import kornia as K
 import kornia.feature as KF
 import pandas as pd
 import torch
-import utils
 from kornia_moons.feature import draw_LAF_matches
 from typing import Tuple
+
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # nopep8
+from utils import ComputerVisionUtils, DataFrameUtils, PlotUtils
 
 
 class LoFTR:
@@ -25,8 +29,8 @@ class LoFTR:
         }
 
     def run(self, img0: np.ndarray, img1: np.ndarray, image_output=False) -> Tuple[np.ndarray, np.ndarray, np.ndarray, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame] or Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        img0_tensor = utils.convert_cv_image_to_torch_image(img0)
-        img1_tensor = utils.convert_cv_image_to_torch_image(img1)
+        img0_tensor = ComputerVisionUtils.convert_cv_image_to_torch_image(img0)
+        img1_tensor = ComputerVisionUtils.convert_cv_image_to_torch_image(img1)
         input_dict = {'image0': K.color.rgb_to_grayscale(img0_tensor),  # LofTR works on grayscale images only
                       'image1': K.color.rgb_to_grayscale(img1_tensor)}
 
@@ -68,10 +72,10 @@ class LoFTR:
         filter0_df = pd.DataFrame(filter0)
         filter1_df = pd.DataFrame(filter1)
 
-        img0_feature_df = utils.drop_zero(df=mkpts0_df)
-        img1_feature_df = utils.drop_zero(df=mkpts1_df)
-        img0_feature_matched_df = utils.drop_zero(df=filter0_df)
-        img1_feature_matched_df = utils.drop_zero(df=filter1_df)
+        img0_feature_df = DataFrameUtils.drop_zero(df=mkpts0_df)
+        img1_feature_df = DataFrameUtils.drop_zero(df=mkpts1_df)
+        img0_feature_matched_df = DataFrameUtils.drop_zero(df=filter0_df)
+        img1_feature_matched_df = DataFrameUtils.drop_zero(df=filter1_df)
 
         img0_feature_matched_df = img0_feature_matched_df.reset_index(
             drop=True)
@@ -79,7 +83,7 @@ class LoFTR:
             drop=True)
 
         if image_output is True:
-            img0_result, img1_result, img_result = utils.plot_2d_image_with_features(
+            img0_result, img1_result, img_result = PlotUtils.plot_2d_image_with_features(
                 img0=img0,
                 img1=img1,
                 img0_feature_df=img0_feature_df,
@@ -108,7 +112,7 @@ if __name__ == "__main__":
         int(w/resize_factor), int(h/resize_factor)), interpolation=cv2.INTER_LANCZOS4)
 
     loftr = LoFTR()
-    img_result, img0_feature_df, img1_feature_df, img0_feature_matched_df, img1_feature_matched_df = loftr.run(
+    img0_result, img1_result, img_result, img0_feature_df, img1_feature_df, img0_feature_matched_df, img1_feature_matched_df = loftr.run(
         img0_resized, img1_resized, image_output=True)
 
-    utils.show_image(type(loftr).__name__, img_result)
+    PlotUtils.show_image(type(loftr).__name__, img_result)

@@ -1,0 +1,10 @@
+
+# feature extractor
+SIFT: False
+ORB: False
+
+# feature matcher
+LoFTR: True
+
+# transformation
+SVDTF: True

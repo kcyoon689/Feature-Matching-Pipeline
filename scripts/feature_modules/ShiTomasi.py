@@ -1,8 +1,12 @@
 import cv2
 import numpy as np
 import pandas as pd
-import utils
 from typing import Tuple
+
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # nopep8
+from utils import PlotUtils
 
 
 class ShiTomasi:
@@ -48,4 +52,4 @@ if __name__ == "__main__":
     shi_tomasi = ShiTomasi()
     img_result, keypoints_df = shi_tomasi.run(img, image_output=True)
 
-    utils.show_image(type(shi_tomasi).__name__, img_result)
+    PlotUtils.show_image(type(shi_tomasi).__name__, img_result)

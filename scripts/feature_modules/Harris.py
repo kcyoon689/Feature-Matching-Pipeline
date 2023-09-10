@@ -1,8 +1,12 @@
 import cv2
 import numpy as np
 import pandas as pd
-import utils
 from typing import Tuple
+
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # nopep8
+from utils import PlotUtils
 
 
 class Harris:
@@ -52,4 +56,4 @@ if __name__ == "__main__":
     harris = Harris()
     img_result, keypoints_df = harris.run(img, image_output=True)
 
-    utils.show_image(type(harris).__name__, img_result)
+    PlotUtils.show_image(type(harris).__name__, img_result)

@@ -9,3 +9,4 @@ Pillow==9.4.0
 ply==3.11
 PyQt5-sip==12.11.0
 pyzmq==19.0.2
+PyYAML==6.0.1

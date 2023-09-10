@@ -1,8 +1,12 @@
 import cv2
 import numpy as np
 import pandas as pd
-import utils
 from typing import Tuple
+
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # nopep8
+from utils import DataFrameUtils, PlotUtils
 
 
 class BRIEF:
@@ -18,7 +22,8 @@ class BRIEF:
         keypoints1 = self.star.detect(img, mask=None)
         keypoints2, descriptors = self.brief.compute(img, keypoints1)
 
-        keypoints_df = utils.make_data_frame_from_keypoints(keypoints2)
+        keypoints_df = DataFrameUtils.make_data_frame_from_keypoints(
+            keypoints2)
 
         if image_output is True:
             img_result = cv2.drawKeypoints(
@@ -36,4 +41,4 @@ if __name__ == "__main__":
     brief = BRIEF()
     img_result, keypoints_df, descriptors = brief.run(img, image_output=True)
 
-    utils.show_image(type(brief).__name__, img_result)
+    PlotUtils.show_image(type(brief).__name__, img_result)
