@@ -1,35 +1,38 @@
 import cv2
+import numpy as np
+import pandas as pd
+import utils
+from typing import Tuple
+
 
 class ORB:
-    def run(self, img, image_output=False):
-        self.img = img
-        self.gray = cv2.cvtColor(self.img,cv2.COLOR_BGR2GRAY)
-        self.img2 = None
-        # ORB 추출기 생성
-        orb = cv2.ORB_create()
+    def __init__(self):
+        self.orb = cv2.ORB_create()
 
-        # 키 포인트 검출과 서술자 계산
-        keypoints, descriptor = orb.detectAndCompute(self.gray,None)
+    def run(self, input: dict) -> dict:
+        # TODO: Implement this function
+        return {}
 
-        for i in keypoints:
-            x,y = i.pt
-            # print("x",x)
-            # print("y",y)
+    def run(self, img: np.ndarray, image_output: bool = False) -> Tuple[np.ndarray, pd.DataFrame, np.ndarray] or Tuple[pd.DataFrame, np.ndarray]:
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        keypoints, descriptors = self.orb.detectAndCompute(img_gray, None)
 
-        # 키 포인트 그리기
-        img_draw = cv2.drawKeypoints(self.img,keypoints,self.img2,(0,255,0),flags=0)
+        keypoints_df = utils.make_data_frame_from_keypoints(keypoints)
 
         if image_output is True:
-            return img_draw, keypoints, descriptor
+            img_result = cv2.drawKeypoints(
+                img, keypoints, None,
+                flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+            return img_result, keypoints_df, descriptors
         else:
-            return keypoints, descriptor
+            return keypoints_df, descriptors
+
 
 if __name__ == "__main__":
-    img = cv2.imread('./images/oxford.jpg')
+    img = cv2.imread('./images/oxford.jpg', cv2.IMREAD_COLOR)
 
     orb = ORB()
-    img_draw, keypoints, descriptor = orb.run(img)
+    img_result, keypoints_df, descriptors = orb.run(img, image_output=True)
 
-    cv2.imshow('Res',img_draw)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    utils.show_image(type(orb).__name__, img_result)

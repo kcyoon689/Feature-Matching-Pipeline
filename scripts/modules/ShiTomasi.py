@@ -1,42 +1,51 @@
 import cv2
 import numpy as np
 import pandas as pd
+import utils
+from typing import Tuple
+
 
 class ShiTomasi:
-    def run(self, img, image_output=False):
-        self.img = img
-        self.gray = cv2.cvtColor(self.img,cv2.COLOR_BGR2GRAY)
-        # (input, # of corners, threshold, minimum distance between corners)
-        corners = np.float32(cv2.goodFeaturesToTrack(self.gray,25,0.01,10))
-        corners = np.int0(corners)
+    def run(self, input: dict) -> dict:
+        # TODO: Implement this function
+        return {}
 
-        x_corner = []
-        y_corner = []
+    def run(self, img: np.ndarray, image_output: bool = False) -> Tuple[np.ndarray, pd.DataFrame] or pd.DataFrame:
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        corners = cv2.goodFeaturesToTrack(img_gray, 25, 0.01, 10)
+        corners = (np.reshape(corners, (-1, 2)))
 
-        for i in corners:
-            x,y = i.ravel()
-            x_corner.append(x)
-            y_corner.append(y)
-            cv2.circle(self.img,(x,y),3,(0,0,255),-1)
-            # print("x",x)
-            # print("y",y)
-        corners_pd = pd.DataFrame({'x':x_corner,'y':y_corner})
-        # print("x_corner",corners[:,0,0])
-        # print("y_corner",corners[:,0,1])
+        corners_x, corners_y = np.split(corners, 2, axis=1)
+        corners_x = corners_x.flatten()
+        corners_y = corners_y.flatten()
+
+        keypoints = []
+        for x, y in zip(corners_x, corners_y):
+            keypoints.append(cv2.KeyPoint(x, y, size=10))
+
+        corners_x = np.int0(np.round(corners_x))
+        corners_y = np.int0(np.round(corners_y))
+
+        keypoints_df = pd.DataFrame({
+            'keypoints': keypoints,
+            'x': corners_x,
+            'y': corners_y,
+        })
 
         if image_output is True:
-            return self.img, corners_pd
+            img_result = cv2.drawKeypoints(
+                img, keypoints, None,
+                flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+            return img_result, keypoints_df
         else:
-            return corners_pd
-        # return 
+            return keypoints_df
+
 
 if __name__ == "__main__":
-    img = cv2.imread('./images/oxford.jpg')
+    img = cv2.imread('./images/oxford.jpg', cv2.IMREAD_COLOR)
 
-    ShiTomasi = ShiTomasi()
-    corners_pd = ShiTomasi.run(img)
+    shi_tomasi = ShiTomasi()
+    img_result, keypoints_df = shi_tomasi.run(img, image_output=True)
 
-    print(corners_pd)
-    # cv2.imshow('dst',img)
-    # cv2.waitKey()
-    # cv2.destroyAllWindows()
+    utils.show_image(type(shi_tomasi).__name__, img_result)

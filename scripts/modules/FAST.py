@@ -1,60 +1,39 @@
 import cv2
 import numpy as np
 import pandas as pd
+import utils
+from typing import Tuple
+
 
 class FAST:
-    def run(self, img, image_output=False):
-        self.img = img
-        self.gray = cv2.cvtColor(self.img,cv2.COLOR_BGR2GRAY)
-        self.img2,self.img3 = None,None
+    def __init__(self):
+        self.fast = cv2.FastFeatureDetector_create(
+            threshold=100, nonmaxSuppression=True)
 
-        # 디폴트 값으로 FAST 객체를 시작한다
-        # ()안에 임계값 넣기
-        fast = cv2.FastFeatureDetector_create(100)
-        
-        # 키포인트를 찾고 그린다
-        keypoints = fast.detect(self.gray,None)
+    def run(self, input: dict) -> dict:
+        # TODO: Implement this function
+        return {}
 
-        keypoints_x = []
-        keypoints_y = []
+    def run(self, img: np.ndarray, image_output: bool = False) -> Tuple[np.ndarray, pd.DataFrame] or pd.DataFrame:
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        keypoints = self.fast.detect(img_gray, mask=None)
 
-        for i in keypoints:
-            x,y = i.pt
-            keypoints_x.append(x)
-            keypoints_y.append(y)
-            # print("x",x)
-            # print("y",y)
-        keypoints_pd = pd.DataFrame({'x':keypoints_x,'y':keypoints_y})
-
-        img_draw = cv2.drawKeypoints(self.img,keypoints,self.img2,(255,0,0))
+        keypoints_df = utils.make_data_frame_from_keypoints(keypoints)
 
         if image_output is True:
-            return img_draw, keypoints_pd
+            img_result = cv2.drawKeypoints(
+                img, keypoints, None,
+                flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+            return img_result, keypoints_df
         else:
-            return keypoints_pd
+            return keypoints_df
+
 
 if __name__ == "__main__":
-    img = cv2.imread('./images/oxford.jpg')
+    img = cv2.imread('./images/oxford.jpg', cv2.IMREAD_COLOR)
 
-    fast = FAST(img)
-    img = fast.findCorner()
+    fast = FAST()
+    img_result, keypoints_df = fast.run(img, image_output=True)
 
-    cv2.imshow('dst',img)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
-
-    # print(kp[0].pt)
-    # print("x",kp[0].pt[0])
-    # print("y",kp[0].pt[1])
-    # print(kp[1].pt)
-    # print("x",kp[1].pt[0])
-    # print("y",kp[1].pt[1])
-
-    # # NMS 사용 X
-    # fast.setNonmaxSuppression(0)
-    # kp = fast.detect(img,None)
-    # img3 = cv2.drawKeypoints(img,kp,img3,(255,0,0))
-    # cv2.imshow('FAST2',img3)
-
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    utils.show_image(type(fast).__name__, img_result)
