@@ -13,7 +13,7 @@ class SIFT:
     def __init__(self):
         self.sift = cv2.xfeatures2d.SIFT_create()
 
-    def run(self, input: dict) -> dict:
+    def run_module(self, input: dict) -> dict:
         # TODO: Implement this function
         return {}
 

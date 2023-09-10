@@ -13,7 +13,7 @@ from utils import PlotUtils
 
 
 class SVDTF():
-    def run(self, input: dict) -> dict:
+    def run_module(self, input: dict) -> dict:
         R, t_zero, t_center = self.run(
             input['img0_features_matched'],
             input['img1_features_matched'])

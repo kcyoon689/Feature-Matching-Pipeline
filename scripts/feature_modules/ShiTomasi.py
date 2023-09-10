@@ -10,7 +10,7 @@ from utils import PlotUtils
 
 
 class ShiTomasi:
-    def run(self, input: dict) -> dict:
+    def run_module(self, input: dict) -> dict:
         # TODO: Implement this function
         return {}
 

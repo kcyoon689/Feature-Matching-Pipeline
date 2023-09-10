@@ -18,7 +18,7 @@ class LoFTR:
         self.matcher = KF.LoFTR(pretrained='indoor_new')
         print("LoFTR module is created successfully")
 
-    def run(self, input: dict) -> dict:
+    def run_module(self, input: dict) -> dict:
         img0_feature_df, img1_feature_df, img0_feature_matched_df, img1_feature_matched_df = self.run(
             input['img0'], input['img1'])
         return {

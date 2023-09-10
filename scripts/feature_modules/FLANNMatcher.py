@@ -23,7 +23,7 @@ class FLANNMatcher:
         # Flann 매처 생성 ---③
         self.matcher = cv2.FlannBasedMatcher(index_params, search_params)
 
-    def run(self, input: dict) -> dict:
+    def run_module(self, input: dict) -> dict:
         # TODO: Implement this function
         return {}
 

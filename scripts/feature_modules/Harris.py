@@ -10,6 +10,10 @@ from utils import PlotUtils
 
 
 class Harris:
+    def run_module(self, input: dict) -> dict:
+        # TODO: Implement this function
+        return {}
+
     def run(self, img: np.ndarray, image_output: bool = False) -> Tuple[np.ndarray, pd.DataFrame] or pd.DataFrame:
         img_gray = np.float32(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY))
         dst = cv2.cornerHarris(img_gray, 2, 3, 0.04)

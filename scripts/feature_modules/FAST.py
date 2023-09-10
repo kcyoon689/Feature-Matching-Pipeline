@@ -14,7 +14,7 @@ class FAST:
         self.fast = cv2.FastFeatureDetector_create(
             threshold=100, nonmaxSuppression=True)
 
-    def run(self, input: dict) -> dict:
+    def run_module(self, input: dict) -> dict:
         # TODO: Implement this function
         return {}
 

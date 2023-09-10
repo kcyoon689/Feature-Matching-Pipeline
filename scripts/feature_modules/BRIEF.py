@@ -14,7 +14,7 @@ class BRIEF:
         self.star = cv2.xfeatures2d.StarDetector_create()
         self.brief = cv2.xfeatures2d.BriefDescriptorExtractor_create()
 
-    def run(self, input: dict) -> dict:
+    def run_module(self, input: dict) -> dict:
         # TODO: Implement this function
         return {}
 

@@ -15,7 +15,7 @@ class BFMatcher:
         self.bf = cv2.BFMatcher()
         # self.bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
-    def run(self, input: dict) -> dict:
+    def run_module(self, input: dict) -> dict:
         # TODO: Implement this function
         return {}
 

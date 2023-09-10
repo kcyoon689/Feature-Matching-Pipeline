@@ -13,7 +13,7 @@ class ORB:
     def __init__(self):
         self.orb = cv2.ORB_create()
 
-    def run(self, input: dict) -> dict:
+    def run_module(self, input: dict) -> dict:
         # TODO: Implement this function
         return {}
 
