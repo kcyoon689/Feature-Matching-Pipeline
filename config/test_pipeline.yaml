@@ -1,10 +1,12 @@
 
 # feature extractor
 SIFT: False
-ORB: False
+ORB: True
 
 # feature matcher
-LoFTR: True
+BFMatcher: False
+FLANNMatcher: True
+LoFTR: False
 
 # transformation
 SVDTF: True
