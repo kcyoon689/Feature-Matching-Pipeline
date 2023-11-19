@@ -15,8 +15,14 @@ class SIFT:
         self.sift = cv2.xfeatures2d.SIFT_create()
 
     def run_module(self, input: dict) -> dict:
-        # TODO: Implement this function
-        return {}
+        img0_keypoints_df, img0_descriptors = self.run(input["img0"])
+        img1_keypoints_df, img1_descriptors = self.run(input["img1"])
+        return {
+            "img0_keypoints": img0_keypoints_df["keypoints"],
+            "img1_keypoints": img1_keypoints_df["keypoints"],
+            "img0_descriptors": img0_descriptors,
+            "img1_descriptors": img1_descriptors,
+        }
 
     def run(
         self, img: np.ndarray, image_output: bool = False
