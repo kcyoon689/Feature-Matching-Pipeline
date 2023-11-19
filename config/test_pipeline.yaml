@@ -1,6 +1,7 @@
 
 # feature extractor
-SIFT: True
+BRIEF: True
+SIFT: False
 ORB: False
 
 # feature matcher

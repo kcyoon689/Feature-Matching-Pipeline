@@ -6,13 +6,18 @@ import math
 import numpy as np
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from feature_modules import BFMatcher, FLANNMatcher, LoFTR, ORB, SIFT, SVDTF
+from feature_modules import BRIEF, ORB, SIFT
+from feature_modules import BFMatcher, FLANNMatcher
+from feature_modules import LoFTR, SVDTF
 from utils import PlotUtils, TempUtils
 
 
 def main(config: dict):
     # Load modules
     modules = []
+    if config["BRIEF"] is True:
+        modules.append(BRIEF())
+
     if config["SIFT"] is True:
         modules.append(SIFT())
 
