@@ -11,7 +11,7 @@ from PIL import Image
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def Togray(img):
+def convert_to_gray(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 def PSNR(original, compressed):
@@ -23,75 +23,31 @@ def PSNR(original, compressed):
     return psnr
 
 base_path = "/home/yoonk/Desktop/pipline/result-score/"
-img_list = []
-gray_list = []
-PSNR_list = []
+method_list = ["original", "target", "BRIEFBF", "BRIEFFLANN", "LoFTR", "ORBBF", "ORBFLANN", "SIFT"]
 
 img_dict = {
-    "original": cv2.imread(base_path + "00_Original.png"),
-    "target": cv2.imread(base_path + "01_Target.png"),
-    "BRIEFBF": cv2.imread(base_path + "out-BRIEF-BFMatcher.png"),
-    "BRIEFFLANN": cv2.imread(base_path + "out-BRIEF-FLANNMatcher.png"),
-    "LoFTR": cv2.imread(base_path + "out-LoFTR.png"),
-    "ORBBF": cv2.imread(base_path + "out-ORB-BFMatcher.png"),
-    "ORBFLANN": cv2.imread(base_path + "out-ORB-FLANNMatcher.png"),
-    "SIFT": cv2.imread(base_path + "out-SIFT-BFMatcher.png")
-}
-
-img_list = list(img_dict.keys())
-img_list.remove("original")
-
-gray_original = Togray(img_dict["original"])
-gray_target = Togray(img_dict["target"])
-gray_BRIEFBF = Togray(img_dict["BRIEFBF"])
-gray_BRIEFFLANN = Togray(img_dict["BRIEFFLANN"])
-gray_LoFTR = Togray(img_dict["LoFTR"])
-gray_ORBBF = Togray(img_dict["ORBBF"])
-gray_ORBFLANN = Togray(img_dict["ORBFLANN"])
-gray_SIFT = Togray(img_dict["SIFT"])
-
-gray_list = [gray_target, gray_BRIEFBF, gray_BRIEFFLANN, gray_LoFTR, gray_ORBBF, gray_ORBFLANN, gray_SIFT]
-SSIM_score = [0, 0, 0, 0, 0, 0, 0]
-SSIM_diff = [0, 0, 0, 0, 0, 0, 0]
-
-for idx in range(len(gray_list)):
-    (SSIM_score[idx], SSIM_diff[idx]) = ssim(gray_original, gray_list[idx], full=True)
-    SSIM_diff[idx] = (SSIM_diff[idx] * 255).astype("uint8")
-
-Diff = {
-    "original_target": SSIM_diff[0],
-    "original_BRIEFBF": SSIM_diff[1],
-    "original_BRIEFFLANN": SSIM_diff[2],
-    "original_LoFTR": SSIM_diff[3],
-    "original_ORBBF": SSIM_diff[4],
-    "original_ORBFLANN": SSIM_diff[5],
-    "original_SIFT": SSIM_diff[6]
-}
-
-SSIM_score1 = {
-    "original_target": SSIM_score[0],
-    "original_BRIEFBF": SSIM_score[1],
-    "original_BRIEFFLANN": SSIM_score[2],
-    "original_LoFTR": SSIM_score[3],
-    "original_ORBBF": SSIM_score[4],
-    "original_ORBFLANN": SSIM_score[5],
-    "original_SIFT": SSIM_score[6]
-}
-
-
-for psnr_idx in img_list:
-    PSNR_score = PSNR(img_dict["original"], img_dict[psnr_idx])
-    PSNR_list.append(PSNR_score)
-
-
-PSNR_score = {
-    "original_target": PSNR_list[0],
-    "original_BRIEFBF": PSNR_list[1],
-    "original_BRIEFFLANN": PSNR_list[2],
-    "original_LoFTR": PSNR_list[3],
-    "original_ORBBF": PSNR_list[4],
-    "original_ORBFLANN": PSNR_list[5],
-    "original_SIFT": PSNR_list[6]
+    "rgb_img":
+    {
+        method_list[0]: cv2.imread(base_path + "00_Original.png"),
+        method_list[1]: cv2.imread(base_path + "01_Target.png"),
+        method_list[2]: cv2.imread(base_path + "out-BRIEF-BFMatcher.png"),
+        method_list[3]: cv2.imread(base_path + "out-BRIEF-FLANNMatcher.png"),
+        method_list[4]: cv2.imread(base_path + "out-LoFTR.png"),
+        method_list[5]: cv2.imread(base_path + "out-ORB-BFMatcher.png"),
+        method_list[6]: cv2.imread(base_path + "out-ORB-FLANNMatcher.png"),
+        method_list[7]: cv2.imread(base_path + "out-SIFT-BFMatcher.png")
+    },
+    "gray_img":
+    {
+        method_list[0]: convert_to_gray(cv2.imread(base_path + "00_Original.png")),
+        method_list[1]: convert_to_gray(cv2.imread(base_path + "01_Target.png")),
+        method_list[2]: convert_to_gray(cv2.imread(base_path + "out-BRIEF-BFMatcher.png")),
+        method_list[3]: convert_to_gray(cv2.imread(base_path + "out-BRIEF-FLANNMatcher.png")),
+        method_list[4]: convert_to_gray(cv2.imread(base_path + "out-LoFTR.png")),
+        method_list[5]: convert_to_gray(cv2.imread(base_path + "out-ORB-BFMatcher.png")),
+        method_list[6]: convert_to_gray(cv2.imread(base_path + "out-ORB-FLANNMatcher.png")),
+        method_list[7]: convert_to_gray(cv2.imread(base_path + "out-SIFT-BFMatcher.png"))
+    }
 }
 
 img_dict2 = {
@@ -105,41 +61,91 @@ img_dict2 = {
     "SIFT": utils.prepare_image(Image.open(base_path + "out-SIFT-BFMatcher.png").convert("RGB")).to(device)
 }
 
+rgb_list = list(img_dict["rgb_img"].keys())
+gray_list = list(img_dict["gray_img"].keys())
+img2_list = list(img_dict2.keys())
+
+rgb_list.remove("original")
+gray_list.remove("original")
+img2_list.remove("original")
+
+score_list = ["original_target", "original_BRIEFBF", "original_BRIEFFLANN", "original_LoFTR", "original_ORBBF", "original_ORBFLANN", "original_SIFT"]
+
+SSIM_score = [0] * len(score_list)
+SSIM_diff = [0] * len(score_list)
+SSIM_score2 = []
+PSNR_list = []
+
 model = SSIM(channels=3)
 
-SSIM_score_list = []
+for SSIM_idx in range(len(gray_list)):
+    (SSIM_score[SSIM_idx], SSIM_diff[SSIM_idx]) = ssim(img_dict["gray_img"]["original"], img_dict["gray_img"][gray_list[SSIM_idx]], full=True)
+    SSIM_diff[SSIM_idx] = (SSIM_diff[SSIM_idx] * 255).astype("uint8")
 
-for jdx in range(len(img_list)):
-    score = (model(img_dict2["original"], img_dict2[img_list[jdx]], as_loss=False))
-    SSIM_score_list.append(score.item())
+for SSIM_jdx in range(len(img2_list)):
+    score = (model(img_dict2["original"], img_dict2[img2_list[SSIM_jdx]], as_loss=False))
+    SSIM_score2.append(score.item())
 
-    
-SSIM_score2_dict = {
-    "original_target": SSIM_score_list[0],
-    "original_BRIEFBF": SSIM_score_list[1],
-    "original_BRIEFFLANN": SSIM_score_list[2],
-    "original_LoFTR": SSIM_score_list[3],
-    "original_ORBBF": SSIM_score_list[4],
-    "original_ORBFLANN": SSIM_score_list[5],
-    "original_SIFT": SSIM_score_list[6]
+for PSNR_idx in range(len(rgb_list)):
+    PSNR_score = PSNR(img_dict["rgb_img"]["original"], img_dict["rgb_img"][rgb_list[PSNR_idx]])
+    PSNR_list.append(PSNR_score)
+
+SSIM_score = {
+    "Diff_img":
+    {
+        score_list[0]: SSIM_diff[0],
+        score_list[1]: SSIM_diff[1],
+        score_list[2]: SSIM_diff[2],
+        score_list[3]: SSIM_diff[3],
+        score_list[4]: SSIM_diff[4],
+        score_list[5]: SSIM_diff[5],
+        score_list[6]: SSIM_diff[6],
+    },
+    "SSIM_score1":
+    {
+        score_list[0]: SSIM_score[0],
+        score_list[1]: SSIM_score[1],
+        score_list[2]: SSIM_score[2],
+        score_list[3]: SSIM_score[3],
+        score_list[4]: SSIM_score[4],
+        score_list[5]: SSIM_score[5],
+        score_list[6]: SSIM_score[6],
+    },
+    "SSIM_score2":
+    {
+        score_list[0]: SSIM_score2[0],
+        score_list[1]: SSIM_score2[1],
+        score_list[2]: SSIM_score2[2],
+        score_list[3]: SSIM_score2[3],
+        score_list[4]: SSIM_score2[4],
+        score_list[5]: SSIM_score2[5],
+        score_list[6]: SSIM_score2[6],
+    },
 }
 
-print("SSIM_score1: ")
-print(SSIM_score1)
+PSNR_score = {
+    score_list[0]: PSNR_list[0],
+    score_list[1]: PSNR_list[1],
+    score_list[2]: PSNR_list[2],
+    score_list[3]: PSNR_list[3],
+    score_list[4]: PSNR_list[4],
+    score_list[5]: PSNR_list[5],
+    score_list[6]: PSNR_list[6],
+}
 
-print("PSNR_score")
+print("SSIM_score1")
+print(SSIM_score["SSIM_score1"])
+print("SSIM_score2")
+print(SSIM_score["SSIM_score2"])
+print("PSNR_score(db)")
 print(PSNR_score)
 
-print("SSIM_score2: ")
-print(SSIM_score2_dict)
-
-
-# # cv2.imshow("diff-original_target", diff1)
-# # cv2.imshow("diff-original_BRIEFBF", diff2)
-# # cv2.imshow("diff-original_BRIEFFLANN", diff3)
-# # cv2.imshow("diff4-original_LoFTR", diff4)
-# # cv2.imshow("diff5-original_ORBBF", diff5)
-# # cv2.imshow("diff6-original_ORBFLANN", diff6)
-# # cv2.imshow("diff7-original_SIFT", diff7)
-# # cv2.waitKey(0)
-# # cv2.destroyAllWindows()
+# # # cv2.imshow("diff-original_target", diff1)
+# # # cv2.imshow("diff-original_BRIEFBF", diff2)
+# # # cv2.imshow("diff-original_BRIEFFLANN", diff3)
+# # # cv2.imshow("diff4-original_LoFTR", diff4)
+# # # cv2.imshow("diff5-original_ORBBF", diff5)
+# # # cv2.imshow("diff6-original_ORBFLANN", diff6)
+# # # cv2.imshow("diff7-original_SIFT", diff7)
+# # # cv2.waitKey(0)
+# # # cv2.destroyAllWindows()
