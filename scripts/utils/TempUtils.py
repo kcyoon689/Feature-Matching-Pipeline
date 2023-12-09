@@ -14,6 +14,32 @@ class TempUtils:
             print("config: {}\n".format(config))
             return config
 
+    def make_rotated_image(
+        img1_resized: np.ndarray,
+        rotation_matrix: np.ndarray,
+        translation_matrix_zero: np.ndarray,
+    ) -> np.ndarray:
+        img1_resized_rgb = cv2.cvtColor(img1_resized, cv2.COLOR_BGR2RGB)
+        img1_resized_rgb_float = img1_resized_rgb.astype("float32") / 255
+
+        # apply transformation to image
+        rotation_angle = math.atan2(rotation_matrix[1][0], rotation_matrix[0][0])
+        rotation_angle_deg = rotation_angle * 180.0 / math.pi
+        print("\t[rotation_angle_deg] {}".format(rotation_angle_deg))
+
+        h, w, c = img1_resized.shape
+        img1_resized_r = imutils.rotate(
+            img1_resized, -rotation_angle_deg, center=(int(h / 2), int(w / 2))
+        )
+        img1_resized_r_tf = imutils.translate(
+            img1_resized_r, translation_matrix_zero[0], translation_matrix_zero[1]
+        )
+        # img1_resized_r_tf = imutils.translate(img1_resized_r, 0, 0)
+        img1_resized_r_tf_rgb = cv2.cvtColor(img1_resized_r_tf, cv2.COLOR_BGR2RGB)
+        img1_resized_r_tf_rgb_float = img1_resized_r_tf_rgb.astype("float32") / 255
+
+        return img1_resized_r_tf_rgb_float
+
     def make_concat_rotated_images(
         img1_resized: np.ndarray,
         rotation_matrix: np.ndarray,
@@ -58,6 +84,11 @@ class TempUtils:
             max(0, h0 - h1) : max(0, h0 - h1) + h1,
             w0 + max(1, int(w1 / 100)) : w0 + max(1, int(w1 / 100)) + w1,
         ] = np.copy(img1)
+        # save_img0 = canvas[0 : max(h0, h1), 0:w0]  # img0
+        # save_img1 = canvas[
+        #     0 : max(h0, h1),
+        #     w0 + max(1, int(w1 / 100)) : w0 + max(1, int(w1 / 100)) + w1,
+        # ]  # img1
         return canvas
 
     def get_transformation_from_rotation(offset_rotation_deg):

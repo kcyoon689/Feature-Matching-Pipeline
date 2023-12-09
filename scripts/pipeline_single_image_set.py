@@ -15,23 +15,30 @@ from utils import PlotUtils, TempUtils
 def main(config: dict):
     # Load modules
     modules = []
+    names = []
     if config["BRIEF"] is True:
         modules.append(BRIEF())
+        names.append("BRIEF")
 
     if config["SIFT"] is True:
         modules.append(SIFT())
+        names.append("SIFT")
 
     if config["ORB"] is True:
         modules.append(ORB())
+        names.append("ORB")
 
     if config["LoFTR"] is True:
         modules.append(LoFTR())
+        names.append("LoFTR")
 
     if config["BFMatcher"] is True:
         modules.append(BFMatcher())
+        names.append("BFMatcher")
 
     if config["FLANNMatcher"] is True:
         modules.append(FLANNMatcher())
+        names.append("FLANNMatcher")
 
     if config["SVDTF"] is True:
         modules.append(SVDTF())
@@ -101,13 +108,56 @@ def main(config: dict):
         output["rotation_matrix"],
         output["translation_matrix_center"],
     )
+
+    img1_rotated = TempUtils.make_rotated_image(
+        img1_resized_padded,
+        output["rotation_matrix"],
+        output["translation_matrix_center"],
+    )
+
     img0_resized_padded_rgb = cv2.cvtColor(img0_resized_padded, cv2.COLOR_BGR2RGB)
     img0_resized_padded_rgb_float = img0_resized_padded_rgb.astype("float32") / 255
     img01_concat = TempUtils.concat_images_different_size(
         img0_resized_padded_rgb_float, img1_concat_rotated
     )
 
-    PlotUtils.show_image("img01_concat", img01_concat)
+    winname = "out"
+    for name in names:
+        winname = winname + "-" + str(name)
+
+    print(
+        "img0_resized_padded_rgb.shape", img0_resized_padded_rgb.shape
+    )  # (506, 586, 3)
+    print(
+        "img0_resized_padded_rgb_float.shape", img0_resized_padded_rgb_float.shape
+    )  # (506, 586, 3)
+
+    print("img0_resized_padded.shape", img0_resized_padded.shape)  # (506, 586, 3)
+    print("img1_resized_padded.shape", img1_resized_padded.shape)  # (545, 667, 3)
+    print("img1_rotated.shape", img1_rotated.shape)  # (545, 667, 3)
+
+    h0, w0, c0 = img0_resized_padded.shape
+    h1, w1, c1 = img1_resized_padded.shape
+    h_max, w_max = max(h0, h1), max(w0, w1)
+
+    img0_max_canvas = np.zeros((h_max, w_max, c0), dtype=np.uint8)  # (545, 667, 3)
+
+    img0_max_canvas[
+        int((h_max - h0) / 2) : int(((h_max - h0) / 2) + h0),
+        int((w_max - w0) / 2) : int(((w_max - w0) / 2) + w0),
+    ] = np.copy(img0_resized_padded)
+
+    print("img0_max_canvas.shape", img0_max_canvas.shape)
+
+    cv2.imshow("Original", img0_max_canvas)
+    cv2.imshow("Target", img1_resized_padded)
+    cv2.imshow(winname, img1_rotated)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    # PlotUtils.show_image("img01_concat", img01_concat) ###
+    # PlotUtils.show_image(winname, img1_rotated)
 
 
 if __name__ == "__main__":
