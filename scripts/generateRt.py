@@ -15,10 +15,10 @@ img = cv2.imread(imgPath, cv2.IMREAD_COLOR)
 centerX, centerY = imgW/2, imgH/2
 
 # rotation
-randAngle = random.uniform(-30, 30)
-# randAngle = 30
+#randAngle = random.uniform(-30, 30)
+randAngle = 60
 theta = (randAngle/180.) * np.pi
-rotMatrix = np.array([[np.cos(theta), -np.sin(theta)], 
+rotMatrix = np.array([[np.cos(theta), -np.sin(theta)],
                          [np.sin(theta),  np.cos(theta)]])
 
 # M = cv2.getRotationMatrix2D((centerX, centerY), randAngle, 1.0)
@@ -48,7 +48,11 @@ paddingH = int(abs(finalTMatrix[1]))
 paddedImg = np.zeros((rotatedH + 2*paddingH, rotatedW + 2*paddingW, 3), dtype=np.uint8)
 paddedImg[paddingH:paddingH+rotatedH, paddingW:paddingW+rotatedW] = np.copy(rotated)
 
+paddedOrigin = np.zeros((rotatedH + 2*paddingH, rotatedW + 2*paddingW, 3), dtype=np.uint8)
+paddedOrigin[paddingH:paddingH+imgH, paddingW:paddingW+imgW] = np.copy(img)
+
 cv2.imwrite("/home/yoonk/Desktop/pipline/paddedImg.png", paddedImg)
+cv2.imwrite("/home/yoonk/Desktop/pipline/paddedOrigin.png", paddedOrigin)
 
 print(imgW/2, imgH/2)
 print(t)
