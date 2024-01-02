@@ -154,7 +154,7 @@ cython_debug/
 
 # Data Folder
 data-prostate/*
-diff-result/*
+result-diff/*
 result/*
 result-score/*
 GT/*
