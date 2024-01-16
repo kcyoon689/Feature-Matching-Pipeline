@@ -12,12 +12,45 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utils import ComputerVisionUtils, DataFrameUtils, PlotUtils
+from lib.GlueStick import gluestick
+from lib.GlueStick.gluestick.models.two_view_pipeline import TwoViewPipeline
 
 
-class LoFTR:
+class GlueStick:
     def __init__(self):
-        self.matcher = KF.LoFTR(pretrained="indoor_new")
-        print("LoFTR module is created successfully")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.config = {
+            "name": "two_view_pipeline",
+            "use_lines": True,
+            "extractor": {
+                "name": "wireframe",
+                "sp_params": {
+                    "force_num_keypoints": False,
+                    "max_num_keypoints": 1000,
+                },
+                "wireframe_params": {
+                    "merge_points": True,
+                    "merge_line_endpoints": True,
+                },
+                "max_n_lines": 300,
+            },
+            "matcher": {
+                "name": "gluestick",
+                "weights": str(
+                    gluestick.GLUESTICK_ROOT
+                    / "resources"
+                    / "weights"
+                    / "checkpoint_GlueStick_MD.tar"
+                ),
+                "trainable": False,
+            },
+            "ground_truth": {
+                "from_pose_depth": False,
+            },
+        }
+
+        self.pipeline_model = TwoViewPipeline(self.config).to(self.device).eval()
+        print("GlueStick module is created successfully")
 
     def run_module(self, input: dict) -> dict:
         (
@@ -50,17 +83,22 @@ class LoFTR:
         img0_tensor = ComputerVisionUtils.convert_cv_image_to_torch_image(img0)
         img1_tensor = ComputerVisionUtils.convert_cv_image_to_torch_image(img1)
 
-        # LofTR works on grayscale images only
+        # GlueStick works on grayscale images only
         input_dict = {
             "image0": K.color.rgb_to_grayscale(img0_tensor),
             "image1": K.color.rgb_to_grayscale(img1_tensor),
         }
 
-        with torch.inference_mode():
-            correspondences = self.matcher(input_dict)
+        pred = self.pipeline_model(input_dict)
 
-        mkpts0 = correspondences["keypoints0"].cpu().numpy()
-        mkpts1 = correspondences["keypoints1"].cpu().numpy()
+        pred_np = gluestick.batch_to_np(pred)
+        kpts0, kpts1 = pred_np["keypoints0"], pred_np["keypoints1"]
+        matches0 = pred_np["matches0"]
+
+        valid_matches = matches0 != -1
+        match_indices = matches0[valid_matches]
+        mkpts0 = kpts0[valid_matches]
+        mkpts1 = kpts1[match_indices]
 
         Fm, inliers = cv2.findFundamentalMat(
             mkpts0, mkpts1, cv2.USAC_MAGSAC, 1.0, 0.999, 100000
@@ -141,10 +179,10 @@ class LoFTR:
 
 
 if __name__ == "__main__":
-    img0 = cv2.imread("./images/oxford.jpg", cv2.IMREAD_COLOR)
-    img1 = cv2.imread("./images/oxford2.jpg", cv2.IMREAD_COLOR)
+    img0 = cv2.imread("./images/E05_resize_10.png", cv2.IMREAD_COLOR)
+    img1 = cv2.imread("./images/E07_resize_10.png", cv2.IMREAD_COLOR)
 
-    resize_factor = 2
+    resize_factor = 10
     h, w, c = img0.shape
     img0_resized = cv2.resize(
         img0,
@@ -152,7 +190,7 @@ if __name__ == "__main__":
         interpolation=cv2.INTER_LANCZOS4,
     )
 
-    resize_factor = 4
+    resize_factor = 10
     h, w, c = img1.shape
     img1_resized = cv2.resize(
         img1,
@@ -160,7 +198,7 @@ if __name__ == "__main__":
         interpolation=cv2.INTER_LANCZOS4,
     )
 
-    loftr = LoFTR()
+    glueStick = GlueStick()
     (
         img0_result,
         img1_result,
@@ -169,6 +207,6 @@ if __name__ == "__main__":
         img1_feature_df,
         img0_feature_matched_df,
         img1_feature_matched_df,
-    ) = loftr.run(img0_resized, img1_resized, image_output=True)
+    ) = glueStick.run(img0_resized, img1_resized, image_output=True)
 
-    PlotUtils.show_image(type(loftr).__name__, img_result)
+    PlotUtils.show_image(type(glueStick).__name__, img_result)

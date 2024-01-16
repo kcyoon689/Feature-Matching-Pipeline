@@ -3,6 +3,8 @@ from .BRIEF import BRIEF
 from .FAST import FAST
 from .FLANNMatcher import FLANNMatcher
 from .Harris import Harris
+from .GlueStick import GlueStick
+from .LightGlue import LightGlue
 from .LoFTR import LoFTR
 from .ORB import ORB
 from .ShiTomasi import ShiTomasi
