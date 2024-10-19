@@ -7,7 +7,7 @@
 3. Feature Matcher
 4. Transformation Calculator
 
-### Download weights for GluuStick
+### Download weights for GlueStick
 
 ```bash
 wget https://github.com/cvg/GlueStick/releases/download/v0.1_arxiv/checkpoint_GlueStick_MD.tar -P resources/weights
