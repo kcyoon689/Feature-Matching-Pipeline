@@ -13,6 +13,41 @@ from feature_modules import SVDTF
 from utils import PlotUtils, TempUtils
 
 
+def argparser():
+    parser = argparse.ArgumentParser(description="Image Registration")
+    parser.add_argument(
+        "--config",
+        type=str,
+        default="config/test_pipeline.yaml",
+        help="config file path",
+    )
+    parser.add_argument(
+        "--gt_json",
+        type=str,
+        default="",  # "GT/E05_resize_10/result.json"
+        help="gt json path",
+    )
+    parser.add_argument(
+        "--img0",
+        type=str,
+        default="images/oxford.jpg",
+        help="path to image 0",
+    )
+    parser.add_argument(
+        "--img1",
+        type=str,
+        default="images/oxford2.jpg",
+        help="path to image 1",
+    )
+    parser.add_argument(
+        "--light_glue_method",
+        type=str,
+        default="",
+        help="method to use for LightGlue",
+    )
+    return parser
+
+
 def run_image_registration(
     args: argparse.Namespace,
     config: dict,
@@ -104,10 +139,18 @@ def run_image_registration(
         "img1": img1_resized_padded,
     }
     for module in modules:
-        print("\n[{}] run({})\n".format(type(module).__name__, type(input)))
-        print("\t[input] {}".format(input.keys()))
-        output = module.run_module(input=input)
-        print("\t[output] {}".format(output.keys()))
+        module_name = type(module).__name__
+        print(f"\n[{module_name}] run({type(input)})\n")
+        print(f"\t[input] {input.keys()}")
+
+        if module_name in ["LoFTR", "GlueStick", "LightGlue"]:
+            # 항상 원본 이미지로 입력 구성
+            module_input = {"img0": img0_resized_padded, "img1": img1_resized_padded}
+        else:
+            module_input = input
+        # print("\n[{}] run({})\n".format(type(module).__name__, type(input)))
+        output = module.run_module(input=module_input)
+        print(f"\t[output] {output.keys()}")
         input = output
 
     # print("\t[rotation_matrix] {}".format(output["rotation_matrix"]))
@@ -173,38 +216,7 @@ def run_image_registration(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Image Registration")
-    parser.add_argument(
-        "--config",
-        type=str,
-        default="config/test_pipeline.yaml",
-        help="config file path",
-    )
-    parser.add_argument(
-        "--gt_json",
-        type=str,
-        default="",  # "GT/E05_resize_10/result.json"
-        help="gt json path",
-    )
-    parser.add_argument(
-        "--img0",
-        type=str,
-        default="images/E05_resize_10.png",
-        help="path to image 0",
-    )
-    parser.add_argument(
-        "--img1",
-        type=str,
-        default="images/E07_resize_10.png",
-        help="path to image 1",
-    )
-    parser.add_argument(
-        "--light_glue_method",
-        type=str,
-        default="",
-        help="method to use for LightGlue",
-    )
-
+    parser = argparser()
     args = parser.parse_args()
 
     if args.gt_json != "":
