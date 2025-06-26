@@ -1,0 +1,62 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+    "name": "test",
+    "build": {
+        // "context": "..",
+        //"dockerfile": "${localEnv:DOCKERFILE}"
+        "dockerfile": "Dockerfile"
+    },
+    "runArgs": [
+        "--privileged",
+        "--network=host",
+        "--ipc=host",
+        "--pid=host",
+        // "--runtime=nvidia",  // NVIDIA GPU 사용을 위해 GPU 접근 권한 부여
+        "--gpus=all",
+        "--device=/dev",
+        // opencv camera 사용을 위해 display 환경변수 설정
+        "--env=DISPLAY",
+        "--env=XDG_RUNTIME_DIR",
+        "--env=WAYLAND_DISPLAY",
+        "--volume=/dev/snd:/dev/snd",
+        "--volume=/tmp/.X11-unix:/tmp/.X11-unix"
+        // "--volume=/dev/video0:/dev/video0
+        // "--mount type=bind,source=/dev/video0,target=/dev/video0"
+        // "--mount type=bind,source=/dev/snd,target=/dev/snd",
+        // "--mount type=bind,source=/dev/bus/usb,target=/dev/bus/usb"
+    ],
+    // Features to add to the dev container. More info: https://containers.dev/features.
+    // "features": {},
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    // "forwardPorts": [],
+    // Use 'postCreateCommand' to run commands after the container is created.
+    // "initializeCommand": "xhost +local:docker",
+    // "postCreateCommand": "sh .devcontainer/postCreateCommand.sh",
+    // Configure tool-specific properties.
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "donjayamanne.githistory",
+                "msfukui.eof-mark",
+                "mhutchie.git-graph",
+                "eamodio.gitlens",
+                "oderwat.indent-rainbow",
+                "streetsidesoftware.code-spell-checker",
+                "naumovs.color-highlight",
+                "yzhang.markdown-all-in-one",
+                "shd101wyy.markdown-preview-enhanced",
+                "ms-python.python",
+                "shardulm94.trailing-spaces",
+                "ms-python.black-formatter",
+                "usernamehw.errorlens",
+                "ms-python.pylint",
+                "vscode-icons-team.vscode-icons",
+                "ms-azuretools.vscode-docker",
+                "ms-toolsai.jupyter"
+            ]
+        }
+    },
+    // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+    "remoteUser": "user"
+}
