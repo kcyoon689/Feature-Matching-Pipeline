@@ -33,9 +33,7 @@ class LoFTR:
             "img1_features_matched": img1_feature_matched_df,
         }
 
-    def run(
-        self, img0: np.ndarray, img1: np.ndarray, image_output=False
-    ) -> (
+    def run(self, img0: np.ndarray, img1: np.ndarray, image_output=False) -> (
         Tuple[
             np.ndarray,
             np.ndarray,
@@ -62,6 +60,33 @@ class LoFTR:
         mkpts0 = correspondences["keypoints0"].cpu().numpy()
         mkpts1 = correspondences["keypoints1"].cpu().numpy()
 
+        print(f"[LoFTR] #matches: {mkpts0.shape[0]}")
+
+        # Exception handling: At least 8 matching points are required
+        if mkpts0.shape[0] < 8 or mkpts1.shape[0] < 8:
+            print(
+                "[LoFTR] Not enough matching points. (min 8, got {})".format(
+                    mkpts0.shape[0]
+                )
+            )
+            # 빈 DataFrame을 반환 (실패 상황을 downstream에서 안전하게 처리)
+            empty_df = pd.DataFrame(columns=[0, 1])
+            if image_output:
+                # PlotUtils.plot_2d_image_with_features에 빈 데이터 전달 시 None 등 반환하도록 보완 필요
+                img0_result = img1_result = img_result = np.zeros_like(img0)
+                return (
+                    img0_result,
+                    img1_result,
+                    img_result,
+                    empty_df,
+                    empty_df,
+                    empty_df,
+                    empty_df,
+                )
+            else:
+                return empty_df, empty_df, empty_df, empty_df
+
+        # inliers 계산 (8개 이상 매칭이 있는 경우에만)
         Fm, inliers = cv2.findFundamentalMat(
             mkpts0, mkpts1, cv2.USAC_MAGSAC, 1.0, 0.999, 100000
         )
