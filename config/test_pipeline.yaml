@@ -1,6 +1,6 @@
 
 # feature extractor
-BRIEF: False
+BRIEF: True
 SIFT: False
 ORB: False
 
@@ -8,6 +8,8 @@ ORB: False
 BFMatcher: False
 FLANNMatcher: False
 LoFTR: True
+GlueStick: False
+LightGlue: False
 
 # transformation
 SVDTF: True

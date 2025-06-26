@@ -41,13 +41,15 @@ RUN apt-get -qq update \
     && python3 -m pip install kornia_moons==0.2.6 \
     && python3 -m pip install opencv-python-headless \
     && python3 -m pip install torch==1.12.1 \
+	&& python3 -m pip install torchvision==0.13.1 \
     && python3 -m pip install imutils==0.5.4 \
     && python3 -m pip install scipy==1.11.2 \
     && python3 -m pip install tqdm \
     && python3 -m pip install pandas \
     && python3 -m pip install plotly \
 	&& python3 -m pip install tenacity==8.3.0 \
-	&& python3 -m pip install pillow==9.5.0
+	&& python3 -m pip install pillow==9.5.0 \
+	&& python3 -m pip install pyyaml
 
 # RUN export PIP_ROOT_USER_ACTION=ignore
 
