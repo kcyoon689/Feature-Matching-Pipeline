@@ -19,7 +19,8 @@ class FLANNMatcher:
             algorithm=FLANN_INDEX_LSH, table_number=6, key_size=12, multi_probe_level=1
         )
         # 검색 파라미터 설정 ---②
-        search_params = dict(checks=32)
+        # search_params = dict(checks=32)
+        search_params = dict(checks=100)
         # Flann 매처 생성 ---③
         self.matcher = cv2.FlannBasedMatcher(index_params, search_params)
 
@@ -56,10 +57,11 @@ class FLANNMatcher:
         img0_feature_matched = [[], []]
         img1_feature_matched = [[], []]
         for i in matches:
+            # if i.queryIdx < len(img0_keypoints) and i.trainIdx < len(img1_keypoints):
             img0_feature_matched[0].append(img0_keypoints[i.queryIdx].pt[0])
             img0_feature_matched[1].append(img0_keypoints[i.queryIdx].pt[1])
-            img1_feature_matched[0].append(img0_keypoints[i.trainIdx].pt[0])
-            img1_feature_matched[1].append(img0_keypoints[i.trainIdx].pt[1])
+            img1_feature_matched[0].append(img1_keypoints[i.trainIdx].pt[0])
+            img1_feature_matched[1].append(img1_keypoints[i.trainIdx].pt[1])
         img0_feature_matched_df = pd.DataFrame(img0_feature_matched)
         img1_feature_matched_df = pd.DataFrame(img1_feature_matched)
 
