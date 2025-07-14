@@ -39,7 +39,8 @@ RUN apt-get -qq update \
 	&& python3 -m pip install --root-user-action=ignore requests \
     && python3 -m pip install kornia==0.7.0 \
     && python3 -m pip install kornia_moons==0.2.6 \
-    && python3 -m pip install opencv-python-headless \
+    && python3 -m pip install opencv-python\
+	&& python3 -m pip install opencv-contrib-python\
     && python3 -m pip install torch==1.12.1 \
 	&& python3 -m pip install torchvision==0.13.1 \
     && python3 -m pip install imutils==0.5.4 \
@@ -49,7 +50,8 @@ RUN apt-get -qq update \
     && python3 -m pip install plotly \
 	&& python3 -m pip install tenacity==8.3.0 \
 	&& python3 -m pip install pillow==9.5.0 \
-	&& python3 -m pip install pyyaml
+	&& python3 -m pip install pyyaml \
+    && python3 -m pip install omegaconf
 
 # RUN export PIP_ROOT_USER_ACTION=ignore
 

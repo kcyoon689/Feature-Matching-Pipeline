@@ -21,17 +21,13 @@
         "--env=WAYLAND_DISPLAY",
         "--volume=/dev/snd:/dev/snd",
         "--volume=/tmp/.X11-unix:/tmp/.X11-unix"
-        // "--volume=/dev/video0:/dev/video0
-        // "--mount type=bind,source=/dev/video0,target=/dev/video0"
-        // "--mount type=bind,source=/dev/snd,target=/dev/snd",
-        // "--mount type=bind,source=/dev/bus/usb,target=/dev/bus/usb"
     ],
     // Features to add to the dev container. More info: https://containers.dev/features.
     // "features": {},
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],
     // Use 'postCreateCommand' to run commands after the container is created.
-    // "initializeCommand": "xhost +local:docker",
+    "initializeCommand": "xhost +local:docker",
     // "postCreateCommand": "sh .devcontainer/postCreateCommand.sh",
     // Configure tool-specific properties.
     "customizations": {

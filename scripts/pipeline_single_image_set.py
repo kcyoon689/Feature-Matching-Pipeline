@@ -242,7 +242,7 @@ if __name__ == "__main__":
         image1_path=image1_path,
         resize_factor0=10,
         resize_factor1=10,
-        show_image=False,
+        show_image=True,
     )
 
     rotation_angle = np.arctan2(
